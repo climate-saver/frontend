@@ -1,0 +1,13 @@
+.MuiOutlinedInput-notchedOutline {
+  border-radius: 20px !important;
+  border: 2px solid #e0e0e0 !important;
+}
+
+.MuiOutlinedInput-root {
+  padding: 13px 20px !important;
+}
+
+.MuiButtonBase-root {
+  padding-left: 15px !important;
+  padding-right: 12px !important;
+}
