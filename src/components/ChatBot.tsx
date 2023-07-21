@@ -4,6 +4,7 @@ import './ChatBot.css';
 import BottomToolbar from './BottomToolbar';
 import TitleBar from './TitleBar';
 import ChatMessage from './ChatMessage';
+import {API} from '../Api';
 
 interface ChatBotProps {
   backgroundColor?: string;
@@ -75,6 +76,12 @@ export default function ChatBot({
     );
   }
 
+  async function sendMessage(message: string) {
+    // TODO add chat message to list:
+    // TODO Send message to backend and get response(s)
+    await API.sendMessage(message);
+  }
+
   return (
     <Box
       sx={{
@@ -103,9 +110,10 @@ export default function ChatBot({
       <BottomToolbar
         backgroundColor={bottomToolbarBackgroundColor || DEFAULTS.BOTTOM_TOOLBAR_BACKGROUND_COLOR}
         maxWidth={maxWidth || DEFAULTS.MAX_WIDTH}
-        textFieldPlaceholderText={textFieldPlaceholderText || DEFAULTS.TEXTFIELD_PLACEHOLDER_TEXT}
+        onClickSendButton={(message) => sendMessage(message)}
         sendButtonColor={sendButtonColor || DEFAULTS.SEND_BUTTON_COLOR}
         sendButtonIconColor={sendButtonIconColor || DEFAULTS.SEND_BUTTON_ICON_COLOR}
+        textFieldPlaceholderText={textFieldPlaceholderText || DEFAULTS.TEXTFIELD_PLACEHOLDER_TEXT}
       />
     </Box>
   );

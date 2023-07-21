@@ -5,17 +5,19 @@ import SendIcon from '@mui/icons-material/Send';
 interface BottomToolbarProps {
   backgroundColor: string;
   maxWidth: number;
-  textFieldPlaceholderText: string;
+  onClickSendButton: (message: string) => void;
   sendButtonColor: string;
   sendButtonIconColor: string;
+  textFieldPlaceholderText: string;
 }
 
 export default function BottomToolbar({
   backgroundColor,
   maxWidth,
-  textFieldPlaceholderText,
+  onClickSendButton,
   sendButtonColor,
   sendButtonIconColor,
+  textFieldPlaceholderText,
 }: BottomToolbarProps) {
   const [message, setMessage] = useState('');
 
@@ -56,6 +58,7 @@ export default function BottomToolbar({
           disableFocusRipple={true}
           disableRipple={true}
           disabled={!shouldEnableSendButton()}
+          onClick={() => onClickSendButton(message)}
         >
           <SendIcon
             sx={{
