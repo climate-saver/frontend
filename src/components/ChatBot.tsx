@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Box} from '@mui/material';
 import './ChatBot.css';
 import BottomToolbar from './BottomToolbar';
@@ -61,6 +61,8 @@ export default function ChatBot({
   sendButtonIconColor,
   textFieldPlaceholderText,
 }: ChatBotProps) {
+  const [messages, setMessages] = useState(SAMPLE_DATA);
+
   function renderChatMessage(message: {bot: boolean; message: string}) {
     return (
       <ChatMessage
@@ -76,8 +78,12 @@ export default function ChatBot({
     );
   }
 
+  function addMessage(message: string, isBot: boolean) {
+    setMessages([...messages, {bot: isBot, message}]);
+  }
+
   async function sendMessage(message: string) {
-    // TODO add chat message to list:
+    addMessage(message, false);
     // TODO Send message to backend and get response(s)
     await API.sendMessage(message);
   }
@@ -104,7 +110,7 @@ export default function ChatBot({
             maxWidth: maxWidth ? maxWidth : DEFAULTS.MAX_WIDTH,
           }}
         >
-          {SAMPLE_DATA.map((message) => renderChatMessage(message))}
+          {messages.map((message) => renderChatMessage(message))}
         </Box>
       </Box>
       <BottomToolbar
