@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Box} from '@mui/material';
 import './ChatBot.css';
 import BottomToolbar from './BottomToolbar';
 import TitleBar from './TitleBar';
 import ChatMessage from './ChatMessage';
 import {API} from '../Api';
+import {IMessage} from '../types';
 
 interface ChatBotProps {
   backgroundColor?: string;
@@ -35,19 +36,6 @@ const DEFAULTS = {
   TEXTFIELD_PLACEHOLDER_TEXT: 'Type message...',
 };
 
-const SAMPLE_DATA = [
-  {
-    bot: true,
-    message:
-      "Hey, I'm Climate Bot! I can help you learn more about savings and " +
-      'energy rebates in your area. What would you like to know?',
-  },
-  {
-    bot: false,
-    message: "I'd love to learn about the rebates I can get on solar panels!",
-  },
-];
-
 export default function ChatBot({
   backgroundColor,
   bottomToolbarBackgroundColor,
@@ -61,13 +49,38 @@ export default function ChatBot({
   sendButtonIconColor,
   textFieldPlaceholderText,
 }: ChatBotProps) {
-  const [messages, setMessages] = useState(SAMPLE_DATA);
+  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [conversationId, setConversationId] = useState<string>('');
 
-  function renderChatMessage(message: {bot: boolean; message: string}) {
+  const addMessages = useCallback(
+    (newMessages: IMessage[]) => setMessages([...messages, ...newMessages]),
+    [messages]
+  );
+
+  // Initialize the conversation:
+  useEffect(() => {
+    (async () => {
+      if (!conversationId) {
+        let conversation = await API.createConversation();
+        setConversationId(conversation.id);
+      }
+    })();
+  }, [conversationId]);
+
+  // Get the first message(s):
+  useEffect(() => {
+    (async () => {
+      if (conversationId && messages.length === 0) {
+        addMessages(await API.getNextMessages(conversationId));
+      }
+    })();
+  }, [conversationId, messages, addMessages]);
+
+  function renderChatMessage(message: IMessage) {
     return (
       <ChatMessage
         key={message.message}
-        isBot={message.bot}
+        isBot={message.sender === 'Bot'}
         message={message.message}
         botBubbleColor={botBubbleColor || DEFAULTS.BOT_BUBBLE_COLOR}
         botBubbleTextColor={botBubbleTextColor || DEFAULTS.BOT_BUBBLE_TEXT_COLOR}
@@ -79,13 +92,13 @@ export default function ChatBot({
   }
 
   function addMessage(message: string, isBot: boolean) {
-    setMessages([...messages, {bot: isBot, message}]);
+    setMessages([...messages, {sender: isBot ? 'Bot' : 'User', message}]);
   }
 
   async function sendMessage(message: string) {
     addMessage(message, false);
-    // TODO Send message to backend and get response(s)
-    await API.sendMessage(message);
+    await API.sendMessage(conversationId, message);
+    addMessages(await API.getNextMessages(conversationId));
   }
 
   return (

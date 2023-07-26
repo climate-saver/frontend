@@ -3,9 +3,16 @@ import EventEmitter from 'events';
 const API_BASE_URL = 'http://localhost:1338';
 
 export class API extends EventEmitter {
-  static async sendMessage(message: string) {
-    // TODO actually send a message:
-    return API._post('/user', {message});
+  static async createConversation() {
+    return API._post('/conversation');
+  }
+
+  static async sendMessage(conversationId: string, message: string) {
+    return API._post(`/conversation/${conversationId}/messages`, {message});
+  }
+
+  static async getNextMessages(conversationId: string) {
+    return API._get(`/conversation/${conversationId}/nextMessages`);
   }
 
   static _get(path: string) {
