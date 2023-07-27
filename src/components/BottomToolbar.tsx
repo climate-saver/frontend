@@ -56,6 +56,25 @@ export default function BottomToolbar({
     );
   }
 
+  function renderSuggestions() {
+    if (!suggestions) {
+      return null;
+    }
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          margin: 'auto',
+          maxWidth,
+          padding: '16px',
+          paddingTop: 0,
+        }}
+      >
+        {suggestions?.map((suggestion) => renderSuggestion(suggestion))}
+      </Box>
+    );
+  }
+
   return (
     <Box
       sx={{
@@ -99,17 +118,7 @@ export default function BottomToolbar({
           />
         </IconButton>
       </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          margin: 'auto',
-          maxWidth,
-          padding: '16px',
-          paddingTop: 0,
-        }}
-      >
-        {suggestions?.map((suggestion) => renderSuggestion(suggestion))}
-      </Box>
+      {renderSuggestions()}
     </Box>
   );
 }
