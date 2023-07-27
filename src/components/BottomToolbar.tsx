@@ -1,28 +1,59 @@
 import React, {useState} from 'react';
-import {Box, IconButton, TextField} from '@mui/material';
+import {Box, Chip, IconButton, TextField} from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
 interface BottomToolbarProps {
+  awaitingBotResponse: boolean;
   backgroundColor: string;
   maxWidth: number;
   onClickSendButton: (message: string) => void;
   sendButtonColor: string;
   sendButtonIconColor: string;
+  suggestionColor: string;
+  suggestions?: string[];
   textFieldPlaceholderText: string;
 }
 
 export default function BottomToolbar({
+  awaitingBotResponse,
   backgroundColor,
   maxWidth,
   onClickSendButton,
   sendButtonColor,
   sendButtonIconColor,
+  suggestionColor,
+  suggestions,
   textFieldPlaceholderText,
 }: BottomToolbarProps) {
   const [message, setMessage] = useState('');
 
   function shouldEnableSendButton() {
-    return Boolean(message);
+    return Boolean(message) && !awaitingBotResponse;
+  }
+
+  function clickSendButton() {
+    onClickSendButton(message);
+    setMessage('');
+  }
+
+  function renderSuggestion(suggestion: string) {
+    return (
+      <Chip
+        sx={{
+          marginRight: '10px',
+          borderRadius: '10px',
+          paddingLeft: '7px',
+          paddingRight: '7px',
+          paddingTop: '5px',
+          paddingBottom: '5px',
+          color: suggestionColor,
+          borderColor: suggestionColor,
+        }}
+        variant={'outlined'}
+        label={suggestion}
+        onClick={() => setMessage(suggestion)}
+      />
+    );
   }
 
   return (
@@ -46,6 +77,7 @@ export default function BottomToolbar({
           sx={{flex: 1}}
           multiline={true}
           placeholder={textFieldPlaceholderText}
+          value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
         <IconButton
@@ -58,7 +90,7 @@ export default function BottomToolbar({
           disableFocusRipple={true}
           disableRipple={true}
           disabled={!shouldEnableSendButton()}
-          onClick={() => onClickSendButton(message)}
+          onClick={clickSendButton}
         >
           <SendIcon
             sx={{
@@ -66,6 +98,17 @@ export default function BottomToolbar({
             }}
           />
         </IconButton>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          margin: 'auto',
+          maxWidth,
+          padding: '16px',
+          paddingTop: 0,
+        }}
+      >
+        {suggestions?.map((suggestion) => renderSuggestion(suggestion))}
       </Box>
     </Box>
   );

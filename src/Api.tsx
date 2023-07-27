@@ -7,8 +7,8 @@ export class API extends EventEmitter {
     return API._post('/conversation');
   }
 
-  static async sendMessage(conversationId: string, message: string) {
-    return API._post(`/conversation/${conversationId}/messages`, {message});
+  static async sendMessage(conversationId: string, message: string, homeInfoKey?: string) {
+    return API._post(`/conversation/${conversationId}/messages`, {message, homeInfoKey});
   }
 
   static async getNextMessages(conversationId: string) {

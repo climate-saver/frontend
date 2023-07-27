@@ -9,6 +9,7 @@ interface ChatMessageProps {
   bubbleTextSize: number;
   selfBubbleColor: string;
   selfBubbleTextColor: string;
+  showIsTypingAnimation?: boolean;
 }
 export default function ChatMessage({
   isBot,
@@ -18,7 +19,21 @@ export default function ChatMessage({
   bubbleTextSize,
   selfBubbleColor,
   selfBubbleTextColor,
+  showIsTypingAnimation,
 }: ChatMessageProps) {
+  function renderMessageBody() {
+    if (showIsTypingAnimation) {
+      return (
+        <Box>
+          <div className="typing__dot"></div>
+          <div className="typing__dot"></div>
+          <div className="typing__dot"></div>
+        </Box>
+      );
+    }
+    return <div className={'chat-message'}>{message}</div>;
+  }
+
   return (
     <Box
       sx={{
@@ -35,7 +50,7 @@ export default function ChatMessage({
       }}
       mb={2}
     >
-      {message}
+      {renderMessageBody()}
     </Box>
   );
 }
