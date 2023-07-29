@@ -71,8 +71,6 @@ export default function ChatBot({
 
   const addMessages = useCallback(
     (newMessages: IMessage[]) => {
-      setAwaitingBotResponse(true);
-      setTimeout(() => setIsTyping(true), CHAT_PRE_TYPING_PAUSE_DURATION);
       setTimeout(() => {
         setMessages([...messages, ...newMessages]);
         setIsTyping(false);
@@ -96,14 +94,15 @@ export default function ChatBot({
     })();
   }, [conversationId]);
 
-  // Get the first message(s):
   useEffect(() => {
     (async () => {
       if (conversationId && shouldFetchNextMessages()) {
+        setAwaitingBotResponse(true);
+        setTimeout(() => setIsTyping(true), CHAT_PRE_TYPING_PAUSE_DURATION);
         addMessages(await API.getNextMessages(conversationId));
       }
     })();
-  }, [conversationId, messages, addMessages]);
+  }, [conversationId, messages, shouldFetchNextMessages, addMessages]);
 
   // Scroll to bottom when new messages are added:
   useEffect(() => {
