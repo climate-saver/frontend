@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "climate-saver"
-  }
+    "default": "climate-saver",
+    "staging": "climate-saver-staging"
+  },
+  "targets": {},
+  "etags": {}
 }
