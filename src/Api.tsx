@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
+import Config from './config';
 
-const API_BASE_URL = 'http://localhost:1338';
+const API_BASE_URL = Config.CLIMATE_SAVER_API_URL;
 
 export class API extends EventEmitter {
   static async createConversation() {
