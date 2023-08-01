@@ -1,12 +1,15 @@
 import React from 'react';
 import {Box} from '@mui/material';
+import {IProjectRecommendationInfo} from '../types';
+import ProjectRecommendationInfo from './ProjectRecommendationInfo';
 
 interface ChatMessageProps {
   isBot: boolean;
-  message: string;
+  message?: string;
   botBubbleColor: string;
   botBubbleTextColor: string;
   bubbleTextSize: number;
+  projectRecommendationInfo?: IProjectRecommendationInfo;
   selfBubbleColor: string;
   selfBubbleTextColor: string;
   showIsTypingAnimation?: boolean;
@@ -17,6 +20,7 @@ export default function ChatMessage({
   botBubbleColor,
   botBubbleTextColor,
   bubbleTextSize,
+  projectRecommendationInfo,
   selfBubbleColor,
   selfBubbleTextColor,
   showIsTypingAnimation,
@@ -30,6 +34,8 @@ export default function ChatMessage({
           <div className="typing__dot"></div>
         </Box>
       );
+    } else if (projectRecommendationInfo) {
+      return <ProjectRecommendationInfo {...projectRecommendationInfo} />;
     }
     return <div className={'chat-message'}>{message}</div>;
   }
@@ -38,7 +44,7 @@ export default function ChatMessage({
     <Box
       sx={{
         alignSelf: isBot ? 'flex-start' : 'flex-end',
-        maxWidth: '60%',
+        maxWidth: '70%',
         padding: '16px',
         borderBottomRightRadius: isBot ? '12px' : 0,
         borderBottomLeftRadius: isBot ? 0 : '12px',

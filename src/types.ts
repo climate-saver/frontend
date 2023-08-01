@@ -6,3 +6,10 @@ export interface IMessage {
   homeInfoKey?: string;
   more?: boolean;
 }
+
+export interface IProjectRecommendationInfo {
+  name: string;
+  annualEnergySavings: number,
+  totalInstallationCost: number,
+  annualInstallationCost: number,
+}

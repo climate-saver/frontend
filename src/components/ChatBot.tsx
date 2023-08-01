@@ -7,6 +7,21 @@ import ChatMessage from './ChatMessage';
 import {API} from '../Api';
 import {IMessage} from '../types';
 
+const DUMMY_PROJECT_DATA = [
+  {
+    name: 'Ground Source Heat Pump',
+    annualEnergySavings: 1500,
+    totalInstallationCost: 10000,
+    annualInstallationCost: 885,
+  },
+  {
+    name: 'Mini Split Heat Pump',
+    annualEnergySavings: 600,
+    totalInstallationCost: 3000,
+    annualInstallationCost: 265,
+  },
+];
+
 const CHAT_PRE_TYPING_PAUSE_DURATION = 200;
 const CHAT_PAUSE_BUBBLE_DURATION = 1300;
 
@@ -124,6 +139,21 @@ export default function ChatBot({
     );
   }
 
+  function renderProjectRecommendation(projectData: any) {
+    return (
+      <ChatMessage
+        key={projectData.name}
+        isBot={true}
+        botBubbleColor={botBubbleColor || DEFAULTS.BOT_BUBBLE_COLOR}
+        botBubbleTextColor={botBubbleTextColor || DEFAULTS.BOT_BUBBLE_TEXT_COLOR}
+        bubbleTextSize={bubbleTextSize || DEFAULTS.BUBBLE_TEXT_SIZE}
+        projectRecommendationInfo={projectData}
+        selfBubbleColor={selfBubbleColor || DEFAULTS.SELF_BUBBLE_COLOR}
+        selfBubbleTextColor={selfBubbleTextColor || DEFAULTS.SELF_BUBBLE_TEXT_COLOR}
+      />
+    );
+  }
+
   function renderIsTypingChatBubble() {
     if (!isTyping) {
       return;
@@ -190,6 +220,7 @@ export default function ChatBot({
           }}
         >
           {messages.map((message) => renderChatMessage(message))}
+          {DUMMY_PROJECT_DATA.map((project) => renderProjectRecommendation(project))}
           {renderIsTypingChatBubble()}
           <div ref={messagesEndRef} />
         </Box>
