@@ -8,7 +8,7 @@ const PRD_CONFIG = {
 
 const STG_CONFIG = {
   ENVIRONMENT_NAME: 'Staging',
-  CLIMATE_SAVER_API_URL: 'TODO',
+  CLIMATE_SAVER_API_URL: 'https://api-stg-ugevrs7yga-uw.a.run.app',
 };
 
 const DEV_CONFIG = {
