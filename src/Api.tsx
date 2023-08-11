@@ -12,8 +12,12 @@ export class API extends EventEmitter {
     return API._post(`/conversation/${conversationId}/messages`, {message, homeInfoKey});
   }
 
-  static async getNextMessages(conversationId: string) {
-    return API._get(`/conversation/${conversationId}/nextMessages`);
+  static async getNextMessage(conversationId: string) {
+    return API._get(`/conversation/${conversationId}/nextMessage`);
+  }
+
+  static async getProjectRecommendations(conversationId: string) {
+    return API._get(`/homeEnergyProject/recommendations?conversationId=${conversationId}`);
   }
 
   static _get(path: string) {

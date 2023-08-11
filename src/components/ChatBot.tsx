@@ -5,22 +5,7 @@ import BottomToolbar from './BottomToolbar';
 import TitleBar from './TitleBar';
 import ChatMessage from './ChatMessage';
 import {API} from '../Api';
-import {IMessage} from '../types';
-
-const DUMMY_PROJECT_DATA = [
-  {
-    name: 'Ground Source Heat Pump',
-    annualEnergySavings: 1500,
-    totalInstallationCost: 10000,
-    annualInstallationCost: 885,
-  },
-  {
-    name: 'Mini Split Heat Pump',
-    annualEnergySavings: 600,
-    totalInstallationCost: 3000,
-    annualInstallationCost: 265,
-  },
-];
+import {IMessage, IProjectRecommendationInfo} from '../types';
 
 const CHAT_PRE_TYPING_PAUSE_DURATION = 200;
 const CHAT_PAUSE_BUBBLE_DURATION = 1300;
@@ -71,12 +56,16 @@ export default function ChatBot({
   textFieldPlaceholderText,
 }: ChatBotProps) {
   const [messages, setMessages] = useState<IMessage[]>([]);
+  const [postRecommendationMessages, setPostRecommendationMessages] = useState<IMessage[]>([]);
   const [conversationId, setConversationId] = useState<string>('');
+  const [projectRecommendations, setProjectRecommendations] = useState<
+    IProjectRecommendationInfo[]
+  >([]);
   const [awaitingBotResponse, setAwaitingBotResponse] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
-  const shouldFetchNextMessages = useCallback(() => {
+  const shouldFetchNextMessage = useCallback(() => {
     return (
       messages.length === 0 ||
       messages[messages.length - 1].sender === 'User' ||
@@ -84,15 +73,39 @@ export default function ChatBot({
     );
   }, [messages]);
 
-  const addMessages = useCallback(
-    (newMessages: IMessage[]) => {
+  const addSystemMessage = useCallback(
+    (message: IMessage) => {
       setTimeout(() => {
-        setMessages([...messages, ...newMessages]);
+        setMessages([...messages, message]);
         setIsTyping(false);
         setAwaitingBotResponse(false);
       }, CHAT_PAUSE_BUBBLE_DURATION);
     },
     [messages]
+  );
+
+  const shouldFetchProjectRecommendations = useCallback(() => {
+    return messages.length > 0 && messages[messages.length - 1].readyForRecommendations;
+  }, [messages]);
+
+  const addProjectRecommendations = useCallback(
+    (projectRecommendations: IProjectRecommendationInfo[]) => {
+      setTimeout(() => {
+        setProjectRecommendations(projectRecommendations);
+        setPostRecommendationMessages([
+          {
+            sender: 'Bot',
+            answerSuggestions: [`Yes, let's do it!`],
+            message:
+              `Note that all the numbers above are just estimates. Would you like to request` +
+              ` free quotes from our network of local contractors?`,
+          },
+        ]);
+        setIsTyping(false);
+        setAwaitingBotResponse(false);
+      }, CHAT_PAUSE_BUBBLE_DURATION);
+    },
+    []
   );
 
   const scrollToBottom = () => {
@@ -111,13 +124,23 @@ export default function ChatBot({
 
   useEffect(() => {
     (async () => {
-      if (conversationId && shouldFetchNextMessages()) {
+      if (conversationId && shouldFetchNextMessage()) {
         setAwaitingBotResponse(true);
         setTimeout(() => setIsTyping(true), CHAT_PRE_TYPING_PAUSE_DURATION);
-        addMessages(await API.getNextMessages(conversationId));
+        addSystemMessage(await API.getNextMessage(conversationId));
       }
     })();
-  }, [conversationId, messages, shouldFetchNextMessages, addMessages]);
+  }, [conversationId, messages, shouldFetchNextMessage, addSystemMessage]);
+
+  useEffect(() => {
+    (async () => {
+      if (conversationId && shouldFetchProjectRecommendations()) {
+        setAwaitingBotResponse(true);
+        setTimeout(() => setIsTyping(true), CHAT_PRE_TYPING_PAUSE_DURATION);
+        addProjectRecommendations(await API.getProjectRecommendations(conversationId));
+      }
+    })();
+  }, [conversationId, messages, shouldFetchProjectRecommendations]);
 
   // Scroll to bottom when new messages are added:
   useEffect(() => {
@@ -220,7 +243,8 @@ export default function ChatBot({
           }}
         >
           {messages.map((message) => renderChatMessage(message))}
-          {DUMMY_PROJECT_DATA.map((project) => renderProjectRecommendation(project))}
+          {projectRecommendations.map((project) => renderProjectRecommendation(project))}
+          {postRecommendationMessages.map((message) => renderChatMessage(message))}
           {renderIsTypingChatBubble()}
           <div ref={messagesEndRef} />
         </Box>

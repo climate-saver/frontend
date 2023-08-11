@@ -39,6 +39,7 @@ export default function BottomToolbar({
   function renderSuggestion(suggestion: string) {
     return (
       <Chip
+        key={suggestion}
         sx={{
           marginRight: '10px',
           borderRadius: '10px',
