@@ -31,7 +31,7 @@ const DEFAULTS = {
   BOTTOM_TOOLBAR_BACKGROUND_COLOR: 'white',
   BOT_BUBBLE_COLOR: 'white',
   BOT_BUBBLE_TEXT_COLOR: 'black',
-  BUBBLE_TEXT_SIZE: 17,
+  BUBBLE_TEXT_SIZE: 16,
   MAX_WIDTH: 800,
   SELF_BUBBLE_COLOR: '#3DCB78',
   SELF_BUBBLE_TEXT_COLOR: 'white',
@@ -64,6 +64,15 @@ export default function ChatBot({
   const [awaitingBotResponse, setAwaitingBotResponse] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const inputRef = useRef<null | HTMLInputElement>(null);
+
+  const shouldFocusInput = useCallback(() => {
+    return messages[messages.length - 1] && messages[messages.length - 1].autoFocus;
+  }, [messages]);
+
+  const setInputFocused = useCallback(() => {
+    inputRef.current && inputRef.current.focus();
+  }, [inputRef]);
 
   const shouldFetchNextMessage = useCallback(() => {
     return (
@@ -141,6 +150,14 @@ export default function ChatBot({
       }
     })();
   }, [conversationId, messages, shouldFetchProjectRecommendations]);
+
+  useEffect(() => {
+    (async () => {
+      if (conversationId && shouldFocusInput()) {
+        setInputFocused();
+      }
+    })();
+  }, [conversationId, messages, shouldFocusInput, setInputFocused]);
 
   // Scroll to bottom when new messages are added:
   useEffect(() => {
@@ -252,6 +269,7 @@ export default function ChatBot({
       <BottomToolbar
         awaitingBotResponse={awaitingBotResponse}
         backgroundColor={bottomToolbarBackgroundColor || DEFAULTS.BOTTOM_TOOLBAR_BACKGROUND_COLOR}
+        inputRef={inputRef}
         maxWidth={maxWidth || DEFAULTS.MAX_WIDTH}
         onClickSendButton={(message) => sendMessage(message)}
         sendButtonColor={sendButtonColor || DEFAULTS.SEND_BUTTON_COLOR}

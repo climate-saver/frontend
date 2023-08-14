@@ -6,6 +6,7 @@ export interface IMessage {
   homeInfoKey?: string;
   more?: boolean;
   readyForRecommendations?: boolean;
+  autoFocus?: boolean;
 }
 
 export interface IProjectRecommendationInfo {

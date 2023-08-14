@@ -5,6 +5,7 @@ import SendIcon from '@mui/icons-material/Send';
 interface BottomToolbarProps {
   awaitingBotResponse: boolean;
   backgroundColor: string;
+  inputRef: React.RefObject<HTMLInputElement>;
   maxWidth: number;
   onClickSendButton: (message: string) => void;
   sendButtonColor: string;
@@ -17,6 +18,7 @@ interface BottomToolbarProps {
 export default function BottomToolbar({
   awaitingBotResponse,
   backgroundColor,
+  inputRef,
   maxWidth,
   onClickSendButton,
   sendButtonColor,
@@ -95,9 +97,11 @@ export default function BottomToolbar({
       >
         <TextField
           sx={{flex: 1}}
+          inputRef={inputRef}
           multiline={true}
           placeholder={textFieldPlaceholderText}
           value={message}
+          focused
           onChange={(e) => setMessage(e.target.value)}
         />
         <IconButton
